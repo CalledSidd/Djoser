@@ -4,14 +4,14 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 # Create your models here.
 class AccountManager(BaseUserManager):
     # create normal user with the params
-    def create_user(self, username, email, name, password=None):
+    def create_user(self, username, email, name, phone, password=None):
         if not username:
             raise ValueError("User must have a username")
         if not email:
             raise ValueError("User must have an email")
 
         email = self.normalize_email(email)
-        user = self.model(email=email, name = name, username = username)
+        user = self.model(email=email, name = name, username = username, phone = phone)
         user.set_password(password)
         user.save(using = self._db)
         return user
@@ -77,7 +77,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     objects = AccountManager()
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username','phone']
+    REQUIRED_FIELDS = ['username','phone', 'name']
 
     def get_name(self):
         return self.name
