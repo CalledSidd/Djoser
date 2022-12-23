@@ -3,7 +3,26 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 
 # Create your models here.
 class AccountManager(BaseUserManager):
-    pass
+    # create normal user with the params
+    def create_user(self, username, email, name, password=None):
+        if not username:
+            raise ValueError("User must have a username")
+        if not email:
+            raise ValueError("User must have an email")
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, name = name, username = username)
+        user.set_password(password)
+        user.save(using = self._db)
+        return user
+    # creating superuser/admin
+    def create_superuser(self, email, username, name, password):
+        user = self.create_user(username, email, name, password)
+        user.is_superuser = True
+        user.is_staff     = True
+        user.is_admin     = True
+        user.save(using = self._db)
+        return user 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
     STATES = (
@@ -52,8 +71,16 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     is_active    = models.BooleanField(default=True)
     is_staff     = models.BooleanField(default=False)
     is_admin     = models.BooleanField(default=False)
-    is_superadmin = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
     joining_date = models.DateTimeField(auto_now_add=True)
+
+
     objects = AccountManager()
-    def __str__(self):
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username','phone']
+
+    def get_name(self):
         return self.name
+
+    def __str__(self):
+        return self.username
