@@ -9,15 +9,18 @@ class AccountManager(BaseUserManager):
             raise ValueError("User must have a username")
         if not email:
             raise ValueError("User must have an email")
-
         email = self.normalize_email(email)
         user = self.model(email=email, name = name, username = username, phone = phone)
         user.set_password(password)
+        user.is_active    = True
+        user.is_superuser = False
+        user.is_staff     = False
+        user.is_admin     = False
         user.save(using = self._db)
         return user
     # creating superuser/admin
-    def create_superuser(self, email, username, name, password):
-        user = self.create_user(username, email, name, password)
+    def create_superuser(self, email, username,phone,  name, password):
+        user = self.create_user(username, email, phone, name, password)
         user.is_superuser = True
         user.is_staff     = True
         user.is_admin     = True

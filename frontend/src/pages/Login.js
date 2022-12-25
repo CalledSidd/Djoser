@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Login from '../components/User/Login'
-
 
 const LoginPage = () => {
   return (
